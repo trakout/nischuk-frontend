@@ -1,0 +1,176 @@
+//-- variables
+
+// Colors
+$black: #122430
+$offBlack: #273E45
+$white: #FFFCE2
+$offWhite: #EBD2B5
+$red: #E63531 
+
+// Fonts
+$regular: 'pancetta_serif_proregular', Helvetica, Arial, sans-serif
+$light: 'pancetta_serif_prothin', Helvetica, Arial, sans-serif
+
+
+// Framework
+// na in this case 
+
+
+
+//-- mixins
+
+@mixin transition($property, $duration, $ease, $delay)
+	-webkit-transition: $property $duration $ease $delay
+	-moz-transition: $property $duration $ease $delay
+	-o-transition: $property $duration $ease $delay
+	-ms-transition: $property $duration $ease $delay
+	transition: $property $duration $ease $delay
+
+@mixin border-radius($amount)
+	-webkit-border-radius: $amount
+	-moz-border-radius: $amount
+	-ms-border-radius: $amount
+	-o-border-radius: $amount
+	border-radius: $amount
+
+@mixin box-shadow($arg, $arg2: null, $arg3: null)
+	$arguments: $arg, $arg2, $arg3
+	@each $property in $box-shadow-prefixes
+		#{$property}: $arguments
+
+@mixin fadeHover($argOpacity)
+	&:hover
+		cursor: pointer
+		opacity: $argOpacity
+
+
+
+
+//-- Cross-browser opacity
+
+// Usage:
+// .faded-text 
+//   @include opacity(0.8)
+
+@mixin opacity($opacity) 
+	opacity: $opacity
+	$opacity-ie: $opacity * 100
+	filter: alpha(opacity=$opacity-ie) //IE8
+
+
+
+
+//-- clearfix: compatible >= IE6
+
+// Usage:
+// .container-with-floated-children 
+//   @extend %clearfix
+
+%clearfix 
+	*zoom: 1
+	&:before 
+		content: " "
+		display: table
+	&:after 
+		content: " "
+		display: table
+		clear: both
+
+
+
+
+
+//-- Vertically Align: compatible >= IE9
+
+// Usage:
+// .element p 
+//   @include vertical-align
+
+@mixin vertical-align
+	position: relative
+	top: 50%
+	-webkit-transform: translateY(-50%)
+	-ms-transform: translateY(-50%)
+	transform: translateY(-50%)
+
+
+
+
+
+
+//-- font:
+
+// Usage:
+// p
+//   @include font-size(14px)
+
+@function calculateRem($size)
+	$remSize: $size / 16px
+	@return $remSize * 1rem
+
+@mixin font-size($size)
+	font-size: $size
+	font-size: calculateRem($size)
+
+
+
+
+
+//-- breakpoints (mediaquery names):
+
+// Usage:
+// .sidebar 
+//   width: 60%
+//   float: left
+//   margin: 0 2% 0 0
+//   @include bp-small 
+//     width: 100%
+//     float: none
+//     margin: 0
+
+@mixin bp-large 
+	@media only screen and (max-width: 60em) 
+		@content
+
+@mixin bp-medium 
+	@media only screen and (max-width: 40em)
+		@content
+
+@mixin bp-small 
+	@media only screen and (max-width: 30em) 
+		@content
+
+
+
+
+
+//-- SVG Backgrounds w/ png and retina fallback
+// Modernizr dependancy
+
+// Needs the following files:
+// pattern.svg
+// pattern.png
+// pattern@2x.png
+
+// Usage:
+// body
+//   @include background-image('pattern')
+
+$image-path: '../img' !default
+$fallback-extension: 'png' !default
+$retina-suffix: '@2x'
+@mixin background-image($name, $size:false)
+	background-image: url(#{$image-path}/#{$name}.svg)
+	@if($size)
+		background-size: $size
+	
+	.no-svg &
+		background-image: url(#{$image-path}/#{$name}.#{$fallback-extension})
+
+		@media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) 
+			background-image: url(#{$image-path}/#{$name}#{$retina-suffix}.#{$fallback-extension})
+
+
+
+
+
