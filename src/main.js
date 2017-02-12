@@ -1,6 +1,6 @@
 'use strict';
 
-// import BlackTriangle from "./components/BlackTriangle";
+import BlackTriangle from "./component/BlackTriangle";
 //
 // const triangle = new BlackTriangle('#triangle');
 //

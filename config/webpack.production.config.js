@@ -5,7 +5,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   entry: [
     'babel-polyfill',
-    './src/theme/main.styl',
+    './src/style/main.styl',
     './src/main'
   ],
   output: {
@@ -23,7 +23,7 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        include: path.join(__dirname, 'src'),
+        include: path.join(__dirname, '../src'),
         loader: 'babel-loader',
         query: {
           presets: [

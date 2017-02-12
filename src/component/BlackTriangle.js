@@ -1,7 +1,10 @@
+import './BlackTriangle.styl'
+
 export default class BlackTriangle {
   constructor(selector) {
     this.angle = 0;
 
+    console.log('hey')
     this.innerEl = document.createElement('div');
     this.innerEl.className = "BlackTriangle-inner";
 

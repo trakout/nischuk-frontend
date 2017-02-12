@@ -6,7 +6,7 @@ var DashboardPlugin   = require('webpack-dashboard/plugin');
 module.exports = {
   entry: [
     'babel-polyfill',
-    './src/theme/main.styl',
+    './src/style/main.styl',
     './src/main',
     'webpack-dev-server/client?http://localhost:9000'
   ],
@@ -24,7 +24,7 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        include: path.join(__dirname, 'src'),
+        include: path.join(__dirname, '../src'),
         loader: 'babel-loader',
         query: {
           presets: [
