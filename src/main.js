@@ -2,7 +2,7 @@
 
 import BlackTriangle from "./component/BlackTriangle";
 //
-// const triangle = new BlackTriangle('#triangle');
+const triangle = new BlackTriangle('#triangle');
 //
 // window.setInterval(
 //   () => {

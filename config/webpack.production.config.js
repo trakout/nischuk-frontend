@@ -33,6 +33,10 @@ module.exports = {
         }
       },
       {
+        test: /\.(png|jpg|ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/,
+        loader: 'file-loader?name=./asset/[hash].[ext]' // disable hashing
+      },
+      {
         test: /\.styl$/,
         loader: "style!css!autoprefixer!stylus-loader"
       },

@@ -11,7 +11,7 @@ module.exports = {
     'webpack-dev-server/client?http://localhost:9000'
   ],
   output: {
-      publicPath: '/',
+      publicPath: 'http://0.0.0.0:9000/',
       filename: 'main.js'
   },
   debug: true,
@@ -35,9 +35,13 @@ module.exports = {
         }
       },
       {
-        test: /\.styl$/,
-        loader: "style!css!autoprefixer!stylus-loader"
+        test: /\.(png|jpg|ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/,
+        loader: 'file-loader?name=[path][name].[ext]' // disable hashing
       },
+      {
+        test: /\.styl$/,
+        loader: 'style!css?sourceMap!autoprefixer!stylus-loader'
+      }
     ]
   },
   plugins: [

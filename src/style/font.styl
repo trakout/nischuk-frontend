@@ -1,0 +1,21 @@
+$srcDir   = '../asset/font/'
+$fontNames = ('pancetta_serif_probold' 'pancetta_serif_proregular' 'pancetta_serif_prothin')
+
+genFontFace($font)
+  @font-face
+    font-family $font
+    src url($srcDir + $font + '-webfont.eot')
+    src url($srcDir + $font + '-webfont.eot?#iefix') format('embedded-opentype'),
+         url($srcDir + $font + '-webfont.woff2') format('woff2'),
+         url($srcDir + $font + '-webfont.woff') format('woff'),
+         url($srcDir + $font + '-webfont.ttf') format('truetype'),
+         url($srcDir + $font + '-webfont.svg#' + $font) format('svg')
+    font-weight normal
+    font-style normal
+
+
+
+// cards_colors = ( #E0137E #8431BF #2388C4 )
+//
+for $fontName, $i in $fontNames
+  genFontFace($fontName)
