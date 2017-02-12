@@ -1,2 +1,0 @@
-# nischukServer
-### a Sails application
