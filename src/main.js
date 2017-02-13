@@ -1,13 +1,19 @@
 'use strict';
 
-import BlackTriangle from "./component/BlackTriangle";
-//
-const triangle = new BlackTriangle('#triangle');
-//
-// window.setInterval(
-//   () => {
-//     triangle.rotate(1);
-//     triangle.render();
-//   },
-//   20
-// );
+import React from 'react'
+import ReactDOM from 'react-dom'
+
+import HomeContainer from './container/HomeContainer'
+
+
+const MOUNT_NODE = document.getElementById('app')
+
+let render = () => {
+  ReactDOM.render(
+    <HomeContainer />,
+    MOUNT_NODE
+  )
+}
+
+
+render()
