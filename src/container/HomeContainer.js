@@ -9,7 +9,14 @@ export default class HomeContainer extends Component {
 
   render() {
     return (
-      <HexBackground />
+      <div>
+        <HexBackground />
+        <div className="center overlay">
+          <h1>
+            Travis Nischuk
+          </h1>
+        </div>
+      </div>
     )
   }
 

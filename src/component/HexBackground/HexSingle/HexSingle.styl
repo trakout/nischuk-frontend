@@ -1,0 +1,39 @@
+@import '../../../style/var.styl'
+
+svg.hex
+  transform translateZ(0)
+
+  path
+    transition 0.1s ease-in-out 0s
+    stroke-width 1px
+    fill $offBlack
+    stroke $black
+    pointer-events none
+
+    &.side
+      opacity 0
+
+
+  &.u:hover, &:hover
+    path
+      opacity 0.5
+      fill $red
+
+      &.side
+        opacity 0.4
+        animation pulse 2s infinite
+
+
+  &.u
+    path
+      fill $offWhite
+
+      &.top
+        opacity 0.5
+      &.side
+        opacity 0.3
+
+
+@keyframes pulse
+  50%
+    opacity 0.6
