@@ -1,6 +1,7 @@
 var path              = require('path');
 var webpack           = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
   entry: [
@@ -38,18 +39,24 @@ module.exports = {
       },
       {
         test: /\.styl$/,
-        loader: "style!css!autoprefixer!stylus-loader"
+        loader: ExtractTextPlugin.extract("css!autoprefixer!stylus-loader")
       },
     ]
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
+      }
+    }),
     new HtmlWebpackPlugin({
       template: './src/index.pug'
     }),
     new webpack.optimize.CommonsChunkPlugin('common.js'),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin(),
-    new webpack.optimize.AggressiveMergingPlugin()
+    new webpack.optimize.AggressiveMergingPlugin(),
+    new ExtractTextPlugin('style.css')
   ],
   devServer: {
     contentBase: "./src"

@@ -4,18 +4,23 @@ import './HexSingle.styl'
 export default class HexSingle extends Component {
   constructor() {
     super()
-    this.state = {used: false}
+    this.state = {hexClass: 'hex'}
   }
 
-  shouldComponentUpdate() {
-    if (this.state.used) return false
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.state.hexClass == nextState.hexClass) return false
     return true
   }
 
-  _handleHover() {
-    this.setState({used: true})
+  // componentDidUpdate() {}
+
+  _handleMouseEnter() {
+    this.setState({hexClass: 'hex active visible'})
   }
 
+  _handleMouseLeave() {
+    this.setState({hexClass: 'hex back visible'})
+  }
 
   render() {
     // const { uniqKey } = this.props
@@ -24,8 +29,9 @@ export default class HexSingle extends Component {
       <svg version="1.1"
            baseProfile="full"
            width="60" height="52"
-           className={this.state.used ? 'hex u' : 'hex'}
-           onMouseEnter={this._handleHover.bind(this)}
+           className={this.state.hexClass}
+           onMouseEnter={this._handleMouseEnter.bind(this)}
+           onMouseLeave={this._handleMouseLeave.bind(this)}
            xmlns="http://www.w3.org/2000/svg">
 
         {/* starts at the top, goes clockwise to top left, finishes off with top layer */}

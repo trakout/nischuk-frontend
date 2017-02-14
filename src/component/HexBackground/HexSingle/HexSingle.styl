@@ -14,7 +14,7 @@ svg.hex
       opacity 0
 
 
-  &.u:hover, &:hover
+  &.active:hover, &:hover
     path
       opacity 0.5
       fill $red
@@ -24,7 +24,7 @@ svg.hex
         animation pulse 2s infinite
 
 
-  &.u
+  &.active
     path
       fill $offWhite
 
@@ -34,6 +34,39 @@ svg.hex
         opacity 0.3
 
 
+  &.back
+    path
+      &.top
+        opacity 1
+        animation opac-top 6s cubic-bezier(0.68, -0.55, 0.265, 1.55)
+
+      &.side
+        opacity 0
+        animation opac-side 6s cubic-bezier(0.68, -0.55, 0.265, 1.55)
+
+
 @keyframes pulse
   50%
     opacity 0.6
+
+@keyframes opac-top
+  0%
+    fill $offWhite
+    opacity 0.5
+  90%
+    fill $offWhite
+    opacity 0.5
+  100%
+    fill $offBlack
+    opacity 1
+
+@keyframes opac-side
+  0%
+    fill $offWhite
+    opacity 0.3
+  90%
+    fill $offWhite
+    opacity 0.3
+  100%
+    fill $offBlack
+    opacity 0

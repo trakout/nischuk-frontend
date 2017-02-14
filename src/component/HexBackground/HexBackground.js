@@ -5,6 +5,7 @@ import './HexBackground.styl'
 export default class HexBackground extends Component {
   constructor() {
     super()
+    this.gridArr = null
     this.window = this._getWindowSize()
     this.offset = {
       x: 75,
@@ -53,7 +54,7 @@ export default class HexBackground extends Component {
   }
 
   _generateHexGrid() {
-    let gridArr = []
+    this.gridArr = []
 
     for (let col = 0, colLen = this.window.y * 1.4 / this.offset.y; col < colLen; col++) {
       for (let row = 0, rowLen = this.window.x * 1.2 / this.offset.x; row < rowLen; row++) {
@@ -64,11 +65,11 @@ export default class HexBackground extends Component {
             left: (row + (col % 2 ? 0.5 : 0)) * this.offset.x + 'px'
           }
         }
-        gridArr.push(lastIndex)
+        this.gridArr.push(lastIndex)
       }
     }
 
-    return gridArr.map((el) => {
+    return this.gridArr.map((el) => {
       return (
         <div key={el.key} style={el.style}>
           {<HexSingle />}

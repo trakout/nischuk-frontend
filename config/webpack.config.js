@@ -52,6 +52,7 @@ module.exports = {
     new DashboardPlugin()
   ],
   devServer: {
+    hot: true,
     contentBase: "./src"
   }
 };
