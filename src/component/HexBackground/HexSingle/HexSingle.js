@@ -7,12 +7,13 @@ export default class HexSingle extends Component {
     this.state = {hexClass: 'hex'}
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (this.state.hexClass == nextState.hexClass) return false
-    return true
-  }
-
-  // componentDidUpdate() {}
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   if (this.state.hexClass == nextState.hexClass) {
+  //     return false
+  //   }
+  //
+  //   return true
+  // }
 
   _handleMouseEnter() {
     this.setState({hexClass: 'hex active visible'})
@@ -24,12 +25,13 @@ export default class HexSingle extends Component {
 
   render() {
     // const { uniqKey } = this.props
+    const { button } = this.props
 
     return (
       <svg version="1.1"
            baseProfile="full"
            width="60" height="52"
-           className={this.state.hexClass}
+           className={this.state.hexClass + (button ? ' button' : '')}
            onMouseEnter={this._handleMouseEnter.bind(this)}
            onMouseLeave={this._handleMouseLeave.bind(this)}
            xmlns="http://www.w3.org/2000/svg">
@@ -50,6 +52,6 @@ export default class HexSingle extends Component {
   }
 }
 
-// HexSingle.propTypes = {
-//   uniqKey: PropTypes.string.isRequired
-// }
+HexSingle.propTypes = {
+  button: PropTypes.bool
+}

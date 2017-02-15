@@ -21,8 +21,22 @@ html, body
   pointer-events none
   // mix-blend-mode difference
   mix-blend-mode exclusion
+  margin -100px 0 0 0
 
-  h1
-    font-family 'pancetta_serif_probold'
-    font-size 70px
+  @media $tabletVertical
+    margin -160px 0 0 0
+
+  @media $smallHeight
+    margin -120px 0 0 0
+
+  h1, h2
+    font-family 'pancetta_serif_prothin'
+    font-size 60px
     color $white
+    text-align center
+    line-height 0.9em
+
+  h2
+    font-size 26px
+    line-height 1.2em
+    margin-top -14px

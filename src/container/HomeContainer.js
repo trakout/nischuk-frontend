@@ -15,6 +15,9 @@ export default class HomeContainer extends Component {
           <h1>
             Travis Nischuk
           </h1>
+          <h2>
+            Full Stack Developer / Tech Lead
+          </h2>
         </div>
       </div>
     )
