@@ -1,8 +1,8 @@
 # nischuk-frontend
-## Frontend for nischuk.com
+## Frontend for [nischuk.com](https://www.nischuk.com/)
 
 ### Features
-- Webpack development flow & production build
+- Webpack development flow & production build w/ gzip compression
 - ES2015 transpilation
 - Stylus support
 - Pug support
@@ -13,5 +13,5 @@
 ### Development
 - `npm start`
 
-### Deployment Builds
+### Deployment
 - `npm run build`
