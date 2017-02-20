@@ -1,6 +1,7 @@
 var path              = require('path');
 var webpack           = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var CompressionPlugin = require("compression-webpack-plugin");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
@@ -62,7 +63,14 @@ module.exports = {
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
-    new ExtractTextPlugin('style.css')
+    new ExtractTextPlugin('style.css'),
+    new CompressionPlugin({
+        asset: "[path].gz[query]",
+        algorithm: "gzip",
+        test: /\.js$|\.css$|\.svg$|\.woff$|\.woff2$|\.ttf$|\.eot$|\.png$|\.jpg$|\.html$/,
+        threshold: 1000,
+        minRatio: 0.8
+    })
   ],
   devServer: {
     contentBase: "./src"
