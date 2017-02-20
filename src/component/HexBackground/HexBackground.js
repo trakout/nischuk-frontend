@@ -71,7 +71,6 @@ export default class HexBackground extends Component {
       action: 'Outbound Click',
       label: type
     })
-    console.log(type)
   }
 
   _getSvg(type) {
