@@ -14,6 +14,12 @@ module.exports = {
       publicPath: 'http://0.0.0.0:9000/',
       filename: 'main.js'
   },
+  resolve: {
+      alias: {
+          'react': 'react-lite',
+          'react-dom': 'react-lite'
+      }
+  },
   debug: true,
   devtool: 'eval-source-map',
   module: {

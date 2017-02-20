@@ -2,6 +2,8 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom'
+import * as ReactGA from 'react-ga'
+
 
 import HomeContainer from './container/HomeContainer'
 
@@ -15,5 +17,8 @@ let render = () => {
   )
 }
 
+ReactGA.initialize('UA-36319031-2')
+ReactGA.set({ page: window.location.pathname })
+ReactGA.pageview(window.location.pathname)
 
 render()

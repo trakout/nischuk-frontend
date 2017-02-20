@@ -16,10 +16,52 @@
   top 50%
   left 50%
   transform translateX(-50%) translateY(-50%)
-  // top -26px
-  // left -18px
 
-  div
+  .single
     position absolute
     width 60px
     height 52px
+
+
+a
+  &.block
+    position relative
+    display block
+
+  &:hover svg.abstract
+    fill $black
+
+svg.abstract
+  fill $offWhite
+  pointer-events none
+  position absolute
+  height 23px
+  width 23px
+  top 50%
+  left 50%
+  margin-left -13px
+  margin-top -14px
+  // mix-blend-mode difference
+
+  &.github
+    margin-left -15px
+  &.twitter
+    height 22px
+    width 22px
+    margin-left -14px
+    margin-top -13px
+  &.linkedin
+    height 21px
+    width 21px
+    margin-left -14px
+
+
+.gridfade-appear
+  opacity 0
+  transform translateY(10px) translateZ(10px) rotateX(-50deg)
+
+  &.gridfade-appear-active
+    transition all .5s ease-in 1s
+    perspective 250px
+    opacity 1
+    transform translateY(0px) translateZ(0px) rotateX(0deg)

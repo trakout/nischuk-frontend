@@ -49,6 +49,17 @@ svg.hex
     cursor pointer
     path
       fill $red !important
+      animation none !important
+      // opacity 0.9
+
+
+// table
+//   for i in 1 2 3 4 5
+//     svg.hex:nth-child({row})
+//       height: 10px * row
+//
+// svg.hex
+//   animation wipe-in 3s cubic-bezier(0.68, -0.55, 0.265, 1.55)
 
 
 @keyframes pulse
@@ -76,3 +87,12 @@ svg.hex
   100%
     fill $offBlack
     opacity 0
+
+
+@keyframes wipe-in
+  0%
+    opacity 0
+    transform translateZ(0) translateY(50%)
+  100%
+    opacity 1
+    transform translateZ(0) translateY(0%)

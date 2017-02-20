@@ -1,6 +1,18 @@
 import React, { Component, PropTypes } from 'react'
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
+import * as ReactGA from 'react-ga'
 import HexSingle from './HexSingle/'
 import './HexBackground.styl'
+
+import IconEmail from 'babel?presets[]=es2015&presets[]=react!svg-react!../../asset/img/email.svg?name=IconEmail'
+import IconGithub from 'babel?presets[]=es2015&presets[]=react!svg-react!../../asset/img/github.svg?name=IconGithub'
+import IconTwitter from 'babel?presets[]=es2015&presets[]=react!svg-react!../../asset/img/twitter.svg?name=IconTwitter'
+import IconLinkedin from 'babel?presets[]=es2015&presets[]=react!svg-react!../../asset/img/linkedin.svg?name=IconLinkedin'
+
+const linkedin = 'https://www.linkedin.com/in/nischuk/'
+const twitter = 'https://twitter.com/trakout'
+const email = 'mailto:trakout@gmail.com'
+const github = 'https://github.com/trakout'
 
 export default class HexBackground extends Component {
   constructor() {
@@ -53,6 +65,30 @@ export default class HexBackground extends Component {
     this.forceUpdate()
   }
 
+  _trackSocial(type) {
+    ReactGA.event({
+      category: 'Click',
+      action: 'Outbound Click',
+      label: type
+    })
+    console.log(type)
+  }
+
+  _getSvg(type) {
+    if (type == 'email') {
+      return <IconEmail className={'abstract email'} />
+    }
+    if (type == 'twitter') {
+      return <IconTwitter className={'abstract twitter'} />
+    }
+    if (type == 'linkedin') {
+      return <IconLinkedin className={'abstract linkedin'} />
+    }
+    if (type == 'github') {
+      return <IconGithub className={'abstract github'} />
+    }
+  }
+
   _getGridSizes() {
     const rowCount = Math.ceil(this.window.x * 1.2 / this.offset.x)
     const colCount = Math.ceil(this.window.y * 1.4 / this.offset.y + 1)
@@ -78,38 +114,6 @@ export default class HexBackground extends Component {
       middle.x--
     }
 
-    // let breakCheck = false
-    //
-    // // console.log('rowcount', rowCount, 'colcount', colCount)
-    // // console.log('middleX', middle.x, 'middleY', middle.y)
-    //
-    // for (let col = 0, colLen = colCount; col < colLen; col++) {
-    //   if (breakCheck) break
-    //   for (let row = 0, rowLen = rowCount; row < rowLen; row++) {
-    //     if (breakCheck) break
-    //
-    //     // check for hexagonal offset, adjust accordingly
-    //     if (col == middle.y && row == middle.x) {
-    //       console.log('hex center..', (row + (col % 2 ? 0.5 : 0)) * this.offset.x)
-    //       console.log('true center', this.window.x / 2 + 55)
-    //     }
-    //
-    //
-    //     if (col == middle.y && row == middle.x
-    //     && ((row + (col % 2 ? 0.5 : 0)) * this.offset.x > this.window.x / 2 + 75)){
-    //       console.log('offset warn')
-    //
-    //
-    //
-    //       middle.y++
-    //       middle.x--
-    //       breakCheck = true
-    //     }
-    //
-    //   }
-    // }
-
-
     for (let col = 0, colLen = colCount; col < colLen; col++) {
       for (let row = 0, rowLen = rowCount; row < rowLen; row++) {
         let lastIndex = {
@@ -125,6 +129,23 @@ export default class HexBackground extends Component {
         || col == middle.y - 2 && row == middle.x + 1 // github
         || col == middle.y + 4 && row == middle.x - 1) { // twitter
           lastIndex.button = true
+
+          if (middle.y + 2 && row == middle.x) {
+            lastIndex.href = linkedin
+            lastIndex.type = 'linkedin'
+          }
+          if (col == middle.y && row == middle.x - 1) {
+            lastIndex.href = email
+            lastIndex.type = 'email'
+          }
+          if (col == middle.y - 2 && row == middle.x + 1) {
+            lastIndex.href = github
+            lastIndex.type = 'github'
+          }
+          if (col == middle.y + 4 && row == middle.x - 1) {
+            lastIndex.href = twitter
+            lastIndex.type = 'twitter'
+          }
         }
 
         this.gridArr.push(lastIndex)
@@ -133,9 +154,20 @@ export default class HexBackground extends Component {
 
 
     return this.gridArr.map((el) => {
+      let hexTag = <HexSingle button={el.button} />
+
+      if (el.button) {
+        hexTag = (
+          <a target="_blank" onClick={this._trackSocial.bind(this, el.type)} className="block" href={el.href}>
+            <HexSingle button={el.button} />
+            {this._getSvg(el.type)}
+          </a>
+        )
+      }
+
       return (
-        <div key={el.key} style={el.style}>
-          {<HexSingle button={el.button} />}
+        <div key={el.key} style={el.style} className="single">
+          {hexTag}
         </div>
       )
     })
@@ -151,7 +183,14 @@ export default class HexBackground extends Component {
     return (
       <div className="grid-container">
         <div className="grid" style={gridStyle}>
-          {this._generateHexGrid()}
+          <ReactCSSTransitionGroup
+            transitionName="gridfade"
+            transitionAppear={true}
+            transitionAppearTimeout={10000}
+            transitionEnter={false}
+            transitionLeave={false}>
+            {this._generateHexGrid()}
+          </ReactCSSTransitionGroup>
         </div>
       </div>
     )
