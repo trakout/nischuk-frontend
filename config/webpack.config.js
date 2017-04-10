@@ -15,10 +15,10 @@ module.exports = {
       filename: 'main.js'
   },
   resolve: {
-      alias: {
-          'react': 'react-lite',
-          'react-dom': 'react-lite'
-      }
+      // alias: {
+      //     'react': 'react-lite',
+      //     'react-dom': 'react-lite'
+      // }
   },
   debug: true,
   devtool: 'eval-source-map',
