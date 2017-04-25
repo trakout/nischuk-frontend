@@ -1,4 +1,4 @@
-import { MeshLine, MeshLineMaterial } from 'three.meshline'
+import * as animate from 'gsap-promise'
 
 import IconEmail from 'babel?presets[]=es2015&presets[]=react!svg-react!../../../asset/img/email.svg?name=IconEmail'
 import IconGithub from 'babel?presets[]=es2015&presets[]=react!svg-react!../../../asset/img/github.svg?name=IconGithub'
@@ -10,13 +10,22 @@ const twitter = 'https://twitter.com/trakout'
 const email = 'mailto:trakout@gmail.com'
 const github = 'https://github.com/trakout'
 
+const DELAY = 2
+
+const COLOR_RED = 0xe63531
+const COLOR_OFFBLACK = 0x273E45
+const COLOR_BLACK = 0x122430
+const COLOR_OFFWHITE = 0xFFFCE2
+
 
 export default class HexGenerator {
   constructor(renderer) {
-    this.renderer = renderer._getRenderer()
+    this.renderer = renderer
     this.scene = renderer._getScene()
     this.camera = renderer._getCamera()
+    this.controls = renderer._getControls()
 
+    this.hexGroup = new THREE.Group()
     this.gridArr = null
     this.window = this._getWindowSize()
     this.offset = {
@@ -28,58 +37,188 @@ export default class HexGenerator {
   }
 
 
-  _genSingleHex(obj) {
-    let geometry = new THREE.CylinderGeometry( 1, 1, 1, 6 )
-    geometry.vertexColors = new THREE.Color(0xffffff)
+  _mouseIn(item) {
+    animate.to(item.children[0].material.color, 0.5, {r: 1, g: 252/255, b: 226/255})
+    animate.to(item.children[0].material, 0.5, {opacity: 0.5})
+
+    animate.to(item.children[1].material, 0.5, {opacity: 0.5})
+  }
+
+  _mouseOut(item) {
+    if (item.showHover) {
+      animate.to(item.children[0].material.color, 0.5, {r: 230/255, g: 53/255, b: 49/255})
+    } else {
+      animate.to(item.children[0].material.color, 0.5, {r: 39/255, g: 62/255, b: 69/255, delay: DELAY})
+    }
+
+    animate.to(item.children[0].material, 0.5, {opacity: 1, delay: DELAY})
+    animate.to(item.children[1].material, 0.5, {opacity: 0, delay: DELAY})
+  }
 
 
-    let material = new THREE.MeshBasicMaterial({
-      // color: 0x273e45
-      vertexColors: THREE.VertexColors,
-      color: 0x273e45,
-      transparent: true,
-      opacity: 1,
-      depthTest: false
-    })
+  _genSingleHex(obj, gridSize) {
+    // let geometry = new THREE.CylinderBufferGeometry( 1, 1, 0.2, 6 )
+    // geometry.vertexColors = new THREE.Color(0xffffff)
+
+
+    // let material = new THREE.MeshPhongMaterial({
+    //   // color: COLOR_OFFBLACK
+    //   vertexColors: THREE.VertexColors,
+    //   color: 0x111111,
+    //   transparent: false,
+    //   opacity: 1,
+    //   depthTest: false,
+    //   side: THREE.DoubleSide
+    // })
 
     // material.opacity = 0.1
 
 
-    if (obj.button) {
-      material.color = new THREE.Color(0xe63531)
-    }
+    // if (obj.button) {
+    //   material.color = new THREE.Color(COLOR_RED)
+    // }
 
-    let cube = new THREE.Mesh( geometry, material )
+    // let cube = new THREE.Mesh( geometry, material )
 
-    cube.position.x = obj.x
-    cube.position.y = obj.y
+    // cube.position.x = obj.x
+    // cube.position.y = obj.y
+    //
+    // cube.lookAt(new THREE.Vector3(
+    //   this.camera.position.x,
+    //   this.camera.position.y,
+    //   this.camera.position.z
+    // ))
 
-    cube.rotation.x = Math.PI / 2
-    cube.rotation.y = Math.PI / 2
+
+
+
+
+
 
 
     // cube.rotation.y = Math.PI * 0.15
 
 
     // wireframe
-    let geo = new THREE.EdgesGeometry(cube.geometry) // or WireframeGeometry
-    let mat = new THREE.LineBasicMaterial({
-      color: 0x122430,
-      linewidth: 1,
-      transparent: true,
-      opacity: 1
-      // depthTest: false
-    })
-    let wireframe = new THREE.LineSegments(geo, mat)
 
-    wireframe.position.y = 1
 
-    console.log(wireframe.position.z)
+  //   let wireframe = new THREE.LineSegments(
+  //     new THREE.EdgesGeometry(cube.geometry),
+  //     new THREE.LineBasicMaterial({
+  //      color: 0xffffff,
+  //     //  linewidth: 1,
+  //      transparent: true,
+  //      opacity: 0.5
+  //      // depthTest: false
+  //    })
+  //  )
+    // console.log(wireframe)
+    // wireframe.position.y = 1
+    // console.log(wireframe.position.z)
+    // cube.add(wireframe)
+    // console.log(THREE.VertexColors)
+    // this.scene.add(cube)
 
-    cube.add(wireframe)
 
-    this.scene.add(cube)
+    let hexMesh = new THREE.Object3D()
+    let singleMeshGroup = new THREE.Group()
 
+
+
+		hexMesh.add( new THREE.Mesh(
+			new THREE.Geometry(),
+			new THREE.MeshBasicMaterial({
+				color: obj.button ? COLOR_RED : COLOR_OFFBLACK,
+				// emissive: COLOR_OFFBLACK,
+				side: THREE.DoubleSide,
+				shading: THREE.FlatShading,
+        transparent: true,
+        opacity: 1
+			})
+		))
+
+
+    hexMesh.add(new THREE.LineSegments(
+      new THREE.Geometry(),
+      new THREE.LineBasicMaterial({
+       color: 0x000000,
+       linewidth: 1,
+       transparent: true,
+       opacity: 0,
+       side: THREE.BackSide,
+       depthTest: false
+     })
+    ))
+
+
+    // hexMesh.add( new THREE.LineSegments(
+		// 	new THREE.Geometry(),
+		// 	new THREE.LineBasicMaterial({
+		// 		color: 0x000000,
+		// 		transparent: true,
+		// 		opacity: 0.5
+		// 	})
+		// ))
+
+
+    let hexGeometry = new THREE.CylinderBufferGeometry(1, 1, 0.5, 6)
+
+
+
+  	hexMesh.children[ 0 ].geometry.dispose();
+  	hexMesh.children[ 1 ].geometry.dispose();
+
+
+  	hexMesh.children[ 0 ].geometry = hexGeometry;
+    hexMesh.children[ 1 ].geometry = new THREE.EdgesGeometry( hexGeometry );
+
+
+    hexMesh.position.x = obj.x
+    hexMesh.position.y = obj.y
+
+
+  	let outlineMesh = new THREE.Mesh(
+      hexGeometry,
+      new THREE.MeshBasicMaterial({
+        color: COLOR_BLACK,
+        side: THREE.BackSide
+      })
+    )
+
+  	outlineMesh.position.x = hexMesh.position.x
+    outlineMesh.position.y = hexMesh.position.y
+    outlineMesh.position.z = hexMesh.position.z
+  	outlineMesh.scale.multiplyScalar(1.05)
+
+    if (hexMesh.rotation.x < 0) {
+      hexMesh.rotation.x = Math.PI / -2
+      outlineMesh.rotation.x = Math.PI / -2
+    } else {
+      hexMesh.rotation.x = Math.PI / 2
+      outlineMesh.rotation.x = Math.PI / 2
+    }
+
+    if (hexMesh.rotation.y < 0) {
+      hexMesh.rotation.y = Math.PI / 2
+      outlineMesh.rotation.y = Math.PI / 2
+    } else {
+      hexMesh.rotation.y = Math.PI / -2
+      outlineMesh.rotation.y = Math.PI / -2
+    }
+
+    singleMeshGroup.add(outlineMesh)
+    singleMeshGroup.add(hexMesh)
+
+    hexMesh.mouse = {
+      in: this._mouseIn,
+      out: this._mouseOut
+    }
+
+    hexMesh.showHover = obj.button ? true : false
+    hexMesh.originalColor = obj.button ? COLOR_RED : null
+
+    this.hexGroup.add(singleMeshGroup)
+    this.renderer._setMouseWatcher(hexMesh)
 
   }
 
@@ -97,6 +236,8 @@ export default class HexGenerator {
     const colCount = Math.ceil(this.window.y * 1.4 / this.offset.y + 1)
 
     return ({
+      row: rowCount,
+      col: colCount,
       x: rowCount * 75,
       y: colCount * 21.75
     })
@@ -105,25 +246,24 @@ export default class HexGenerator {
 
   _generateHexGrid() {
     const gridSize = this._getGridSizes()
+    const zOffset = 5
     this.gridArr = []
 
-    const rowCount = Math.ceil(this.window.x * 1.2 / this.offset.x)
-    const colCount = Math.ceil(this.window.y * 1.4 / this.offset.y + 1)
-
     let middle = {
-      x: Math.floor(rowCount / 2),
-      y: Math.floor(colCount / 2) + 5
+      x: Math.floor(gridSize.row / 2),
+      y: Math.floor(gridSize.col / 2) + 5
     }
 
     if (this.window.x <= 360) {
       middle.x--
     }
 
-    for (let col = 0, colLen = colCount; col < colLen; col++) {
-      for (let row = 0, rowLen = rowCount; row < rowLen; row++) {
+    for (let col = 0, colLen = gridSize.col; col < colLen; col++) {
+      for (let row = 0, rowLen = gridSize.row; row < rowLen; row++) {
         let lastIndex = {
-          y: col * 0.44 * 2,
+          y: col * 0.45 * 2,
           x: (row + (col % 2 ? 0.5 : 0)) * 3.1
+          // z: (zOffset * (Math.abs((col - Math.floor(colLen / 2))) / Math.floor(colLen / 2)) + zOffset * (Math.abs((row - Math.floor(rowLen / 2))) / Math.floor(rowLen / 2))) / 2
         }
 
         if (col == middle.y - 8 && row == middle.x // linkedin
@@ -154,13 +294,37 @@ export default class HexGenerator {
       }
     }
 
-    console.log(this.gridArr)
-    this.camera.position.y = (colCount / 2 * 0.46 * 2)
-    this.camera.position.x = (rowCount / 2 + (colCount / 2 % 2 ? 0.5 : 0)) * 3.05
+    // console.log(this.gridArr)
+
+    this.camera.position.x = (gridSize.row / 2 + (gridSize.col / 2 % 2 ? 0.5 : 0)) * 3.05
+    this.camera.position.y = (gridSize.col / 2 * 0.46 * 2)
+    this.camera.position.z = 20
+
+
+    if (this.controls) {
+      this.controls.target.set(
+        this.camera.position.x,
+        this.camera.position.y,
+        0
+      )
+
+      this.controls.update()
+      // console.log('huhhhh')
+    }
+
 
     this.gridArr.map((el) => {
-      this._genSingleHex(el)
+      this._genSingleHex(el, gridSize)
     })
+
+    let light = new THREE.PointLight( 0xf2f2f2, 10, 100 )
+    light.position.set( 0, 0, 20 )
+    this.scene.add( light )
+
+    this.scene.add(this.hexGroup)
+
+    this.scene.fog = new THREE.Fog( COLOR_OFFBLACK, 22, 40 )
+
     //   let hexTag = <HexSingle button={el.button} />
     //
     //   if (el.button) {
