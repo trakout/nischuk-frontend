@@ -57,73 +57,10 @@ export default class HexGenerator {
 
 
   _genSingleHex(obj, gridSize) {
-    // let geometry = new THREE.CylinderBufferGeometry( 1, 1, 0.2, 6 )
-    // geometry.vertexColors = new THREE.Color(0xffffff)
-
-
-    // let material = new THREE.MeshPhongMaterial({
-    //   // color: COLOR_OFFBLACK
-    //   vertexColors: THREE.VertexColors,
-    //   color: 0x111111,
-    //   transparent: false,
-    //   opacity: 1,
-    //   depthTest: false,
-    //   side: THREE.DoubleSide
-    // })
-
-    // material.opacity = 0.1
-
-
-    // if (obj.button) {
-    //   material.color = new THREE.Color(COLOR_RED)
-    // }
-
-    // let cube = new THREE.Mesh( geometry, material )
-
-    // cube.position.x = obj.x
-    // cube.position.y = obj.y
-    //
-    // cube.lookAt(new THREE.Vector3(
-    //   this.camera.position.x,
-    //   this.camera.position.y,
-    //   this.camera.position.z
-    // ))
-
-
-
-
-
-
-
-
-    // cube.rotation.y = Math.PI * 0.15
-
-
-    // wireframe
-
-
-  //   let wireframe = new THREE.LineSegments(
-  //     new THREE.EdgesGeometry(cube.geometry),
-  //     new THREE.LineBasicMaterial({
-  //      color: 0xffffff,
-  //     //  linewidth: 1,
-  //      transparent: true,
-  //      opacity: 0.5
-  //      // depthTest: false
-  //    })
-  //  )
-    // console.log(wireframe)
-    // wireframe.position.y = 1
-    // console.log(wireframe.position.z)
-    // cube.add(wireframe)
-    // console.log(THREE.VertexColors)
-    // this.scene.add(cube)
-
 
     let hexMesh = new THREE.Object3D()
     let singleMeshGroup = new THREE.Group()
-
-
+    let hexGeometry = new THREE.CylinderBufferGeometry(1, 1, 0.5, 6)
 
 		hexMesh.add( new THREE.Mesh(
 			new THREE.Geometry(),
@@ -137,11 +74,10 @@ export default class HexGenerator {
 			})
 		))
 
-
     hexMesh.add(new THREE.LineSegments(
       new THREE.Geometry(),
       new THREE.LineBasicMaterial({
-       color: 0x000000,
+       color: COLOR_OFFBLACK,
        linewidth: 1,
        transparent: true,
        opacity: 0,
@@ -150,32 +86,14 @@ export default class HexGenerator {
      })
     ))
 
-
-    // hexMesh.add( new THREE.LineSegments(
-		// 	new THREE.Geometry(),
-		// 	new THREE.LineBasicMaterial({
-		// 		color: 0x000000,
-		// 		transparent: true,
-		// 		opacity: 0.5
-		// 	})
-		// ))
-
-
-    let hexGeometry = new THREE.CylinderBufferGeometry(1, 1, 0.5, 6)
-
-
-
   	hexMesh.children[ 0 ].geometry.dispose();
   	hexMesh.children[ 1 ].geometry.dispose();
-
 
   	hexMesh.children[ 0 ].geometry = hexGeometry;
     hexMesh.children[ 1 ].geometry = new THREE.EdgesGeometry( hexGeometry );
 
-
     hexMesh.position.x = obj.x
     hexMesh.position.y = obj.y
-
 
   	let outlineMesh = new THREE.Mesh(
       hexGeometry,
@@ -219,7 +137,6 @@ export default class HexGenerator {
 
     this.hexGroup.add(singleMeshGroup)
     this.renderer._setMouseWatcher(hexMesh)
-
   }
 
 
