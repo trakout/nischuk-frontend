@@ -1,9 +1,13 @@
 import * as animate from 'gsap-promise'
+import * as base64 from 'base64-lite'
 
-import IconEmail from 'babel?presets[]=es2015&presets[]=react!svg-react!../../../asset/img/email.svg?name=IconEmail'
-import IconGithub from 'babel?presets[]=es2015&presets[]=react!svg-react!../../../asset/img/github.svg?name=IconGithub'
-import IconTwitter from 'babel?presets[]=es2015&presets[]=react!svg-react!../../../asset/img/twitter.svg?name=IconTwitter'
-import IconLinkedin from 'babel?presets[]=es2015&presets[]=react!svg-react!../../../asset/img/linkedin.svg?name=IconLinkedin'
+import IconEmail from 'svg-inline-loader?classPrefix!../../../asset/img/email.svg?name=IconEmail'
+import IconGithub from 'svg-inline-loader?classPrefix!../../../asset/img/github.svg?name=IconGithub'
+import IconTwitter from 'svg-inline-loader?classPrefix!../../../asset/img/twitter.svg?name=IconTwitter'
+import IconLinkedin from 'svg-inline-loader?classPrefix!../../../asset/img/linkedin.svg?name=IconLinkedin'
+
+import fragTexture from 'webpack-glsl!./shader/fragTexture.glsl?name=fragTexture'
+import vertTexture from 'webpack-glsl!./shader/vertTexture.glsl?name=vertTexture'
 
 const linkedin = 'https://www.linkedin.com/in/nischuk/'
 const twitter = 'https://twitter.com/trakout'
@@ -38,10 +42,16 @@ export default class HexGenerator {
 
 
   _mouseIn(item) {
+    console.log(item)
     animate.to(item.children[0].material.color, 0.5, {r: 1, g: 252/255, b: 226/255})
     animate.to(item.children[0].material, 0.5, {opacity: 0.5})
 
     animate.to(item.children[1].material, 0.5, {opacity: 0.5})
+
+    if (item.uColors) {
+      animate.to(item.uColors.texture_color.value, 0.2, {r: 18/255, g: 36/255, b: 48/255})
+      animate.to(item.uColors.background_color.value, 0.2, {r: 236/255, g: 97/255, b: 94/255})
+    }
   }
 
   _mouseOut(item) {
@@ -52,7 +62,42 @@ export default class HexGenerator {
     }
 
     animate.to(item.children[0].material, 0.5, {opacity: 1, delay: DELAY})
-    animate.to(item.children[1].material, 0.5, {opacity: 0, delay: DELAY})
+    animate.to(item.children[1].material, 0.5, {opacity: 0})
+
+    if (item.uColors) {
+      animate.to(item.uColors.texture_color.value, 0.2, {r: 1, g: 252/255, b: 226/255})
+      animate.to(item.uColors.background_color.value, 0.2, {r: 230/255, g: 53/255, b: 49/255})
+    }
+  }
+
+
+  _hexMaterial(type, obj) {
+    let material = null
+
+    if (type === 'multi') {
+      material = []
+      for (let i = 0; i < 8; i++) {
+        material.push(
+          new THREE.MeshBasicMaterial({
+            color: obj.button ? COLOR_RED : COLOR_OFFBLACK,
+            transparent: true,
+            opacity: 1
+          })
+        )
+      }
+      material = new THREE.MultiMaterial(material)
+    } else {
+      material = new THREE.MeshBasicMaterial({
+        color: obj.button ? COLOR_RED : COLOR_OFFBLACK,
+        // emissive: COLOR_OFFBLACK,
+        side: THREE.DoubleSide,
+        shading: THREE.FlatShading,
+        transparent: true,
+        opacity: 1
+      })
+    }
+
+    return material
   }
 
 
@@ -64,14 +109,7 @@ export default class HexGenerator {
 
 		hexMesh.add( new THREE.Mesh(
 			new THREE.Geometry(),
-			new THREE.MeshBasicMaterial({
-				color: obj.button ? COLOR_RED : COLOR_OFFBLACK,
-				// emissive: COLOR_OFFBLACK,
-				side: THREE.DoubleSide,
-				shading: THREE.FlatShading,
-        transparent: true,
-        opacity: 1
-			})
+      obj.button ? this._hexMaterial('multi', obj) : this._hexMaterial('normal', obj)
 		))
 
     hexMesh.add(new THREE.LineSegments(
@@ -86,11 +124,11 @@ export default class HexGenerator {
      })
     ))
 
-  	hexMesh.children[ 0 ].geometry.dispose();
-  	hexMesh.children[ 1 ].geometry.dispose();
+  	hexMesh.children[ 0 ].geometry.dispose()
+  	hexMesh.children[ 1 ].geometry.dispose()
 
-  	hexMesh.children[ 0 ].geometry = hexGeometry;
-    hexMesh.children[ 1 ].geometry = new THREE.EdgesGeometry( hexGeometry );
+  	hexMesh.children[ 0 ].geometry = hexGeometry
+    hexMesh.children[ 1 ].geometry = new THREE.EdgesGeometry(hexGeometry)
 
     hexMesh.position.x = obj.x
     hexMesh.position.y = obj.y
@@ -128,14 +166,19 @@ export default class HexGenerator {
     singleMeshGroup.add(hexMesh)
 
     hexMesh.mouse = {
-      in: this._mouseIn,
-      out: this._mouseOut
+      in: this._mouseIn.bind(this),
+      out: this._mouseOut.bind(this)
     }
 
     hexMesh.showHover = obj.button ? true : false
     hexMesh.originalColor = obj.button ? COLOR_RED : null
 
-    this.hexGroup.add(singleMeshGroup)
+    if (obj.type) {
+      this._drawSvg(this.hexGroup, singleMeshGroup, hexMesh, obj.type)
+    } else {
+      this.hexGroup.add(singleMeshGroup)
+    }
+
     this.renderer._setMouseWatcher(hexMesh)
   }
 
@@ -145,6 +188,61 @@ export default class HexGenerator {
       x: 1400,
       y: 900
     }
+  }
+
+
+  _drawSvg(group, meshGroup, hexMesh, type) {
+    let canvas = document.createElement("canvas")
+    // var svgSize = svg.getBoundingClientRect();
+    // canvas.width = svgSize.width;
+    // canvas.height = svgSize.height;
+    canvas.width = 256
+    canvas.height = 256
+    var ctx = canvas.getContext("2d")
+
+    let img = document.createElement('img')
+    img.setAttribute(
+      'src', 'data:image/svg+xml;base64,' +
+      base64.btoa(unescape(encodeURIComponent(IconTwitter)))
+    )
+
+    img.onload = () => {
+      ctx.translate( canvas.width / 2, canvas.height / 2 )
+      ctx.rotate(Math.PI)
+      ctx.translate( -canvas.width / 2, -canvas.height / 2 )
+      ctx.scale(0.6, 0.6)
+      ctx.translate(85, 85)
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+      var texture = new THREE.Texture(canvas)
+
+      texture.needsUpdate = true
+
+      let material = meshGroup.children[1].children[0].material.materials[1]
+
+      hexMesh.uColors = {
+        background_color: { type: "c", value: new THREE.Color( COLOR_RED ) },
+        texture_color: { type: "c", value: new THREE.Color( COLOR_OFFWHITE ) }
+      }
+
+      // material
+      material = new THREE.ShaderMaterial({
+        uniforms: {
+          background_color: hexMesh.uColors.background_color,
+          texture_color: hexMesh.uColors.texture_color,
+          texture: { type: "t", value: texture }
+        },
+        vertexShader: vertTexture,
+        fragmentShader: fragTexture
+      });
+
+      meshGroup.children[1].children[0].material.materials[1] = material
+
+      // meshGroup.children[1].children[0].material.materials[1].map = texture
+      // meshGroup.children[1].children[0].material.blending = THREE.NoBlending
+      // meshGroup.children[1].children[0].material.materials[1].map.minFilter = THREE.NearestFilter
+
+      group.add(meshGroup)
+    };
   }
 
 
@@ -188,23 +286,23 @@ export default class HexGenerator {
         || col == middle.y - 12 && row == middle.x  // github
         || col == middle.y - 6 && row == middle.x - 1) { // twitter
           lastIndex.button = true
-        //
-        //   if (middle.y + 2 && row == middle.x) {
-        //     lastIndex.href = linkedin
-        //     lastIndex.type = 'linkedin'
-        //   }
-        //   if (col == middle.y && row == middle.x - 1) {
-        //     lastIndex.href = email
-        //     lastIndex.type = 'email'
-        //   }
-        //   if (col == middle.y - 2 && row == middle.x + 1) {
-        //     lastIndex.href = github
-        //     lastIndex.type = 'github'
-        //   }
-        //   if (col == middle.y + 4 && row == middle.x - 1) {
-        //     lastIndex.href = twitter
-        //     lastIndex.type = 'twitter'
-        //   }
+
+          if (col == middle.y - 8 && row == middle.x) {
+            lastIndex.href = linkedin
+            lastIndex.type = 'linkedin'
+          }
+          if (col == middle.y - 10 && row == middle.x - 1) {
+            lastIndex.href = email
+            lastIndex.type = 'email'
+          }
+          if (col == middle.y - 12 && row == middle.x) {
+            lastIndex.href = github
+            lastIndex.type = 'github'
+          }
+          if (col == middle.y - 6 && row == middle.x - 1) {
+            lastIndex.href = twitter
+            lastIndex.type = 'twitter'
+          }
         }
 
         this.gridArr.push(lastIndex)
@@ -242,22 +340,5 @@ export default class HexGenerator {
 
     this.scene.fog = new THREE.Fog( COLOR_OFFBLACK, 22, 40 )
 
-    //   let hexTag = <HexSingle button={el.button} />
-    //
-    //   if (el.button) {
-    //     hexTag = (
-    //       <a target="_blank" onClick={this._trackSocial.bind(this, el.type)} className="block" href={el.href}>
-    //         <HexSingle button={el.button} />
-    //         {this._getSvg(el.type)}
-    //       </a>
-    //     )
-    //   }
-    //
-    //   return (
-    //     <div key={el.key} style={el.style} className="single">
-    //       {hexTag}
-    //     </div>
-    //   )
-    // })
   }
 }
