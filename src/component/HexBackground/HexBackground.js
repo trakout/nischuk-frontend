@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import * as ReactGA from 'react-ga'
 
 import Renderer from './Renderer'
+import SkyBox from './SkyBox'
 import HexGenerator from './HexGenerator'
 import HexBackgroundFallback from '../HexBackgroundFallback'
 import './HexBackground.styl'
@@ -14,9 +15,9 @@ export default class HexBackground extends Component {
   }
 
   shouldComponentUpdate() {
-    console.log('potential update!')
+    // console.log('potential update!')
     if (!this.renderedOnce) return false
-    console.log('component updating!')
+    // console.log('component updating!')
     return true
   }
 
@@ -37,13 +38,14 @@ export default class HexBackground extends Component {
   _runGL() {
     let renderer = new Renderer()
     let hex = new HexGenerator(renderer)
+    let skybox = new SkyBox(renderer)
   }
 
 
   render() {
-    console.log('RENDER')
+    // console.log('RENDER')
     this.renderedOnce = true
-    console.log('support?', this.glSupport)
+    // console.log('support?', this.glSupport)
 
     return (
       <div>

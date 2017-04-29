@@ -6,8 +6,8 @@ import IconGithub from 'svg-inline-loader?classPrefix!../../../asset/img/github.
 import IconTwitter from 'svg-inline-loader?classPrefix!../../../asset/img/twitter.svg?name=IconTwitter'
 import IconLinkedin from 'svg-inline-loader?classPrefix!../../../asset/img/linkedin.svg?name=IconLinkedin'
 
-import fragTexture from 'webpack-glsl!./shader/fragTexture.glsl?name=fragTexture'
-import vertTexture from 'webpack-glsl!./shader/vertTexture.glsl?name=vertTexture'
+import fragAlphaTexture from 'webpack-glsl!../../../asset/shader/fragAlphaTexture.glsl?name=fragAlphaTexture'
+import vertAlphaTexture from 'webpack-glsl!../../../asset/shader/vertAlphaTexture.glsl?name=vertAlphaTexture'
 
 const linkedin = 'https://www.linkedin.com/in/nischuk/'
 const twitter = 'https://twitter.com/trakout'
@@ -37,36 +37,49 @@ export default class HexGenerator {
       y: 29
     }
 
+    this.iconMap = {
+      'twitter': IconTwitter,
+      'linkedin': IconLinkedin,
+      'email': IconEmail,
+      'github': IconGithub
+    }
+
+    this.hrefMap = {
+      'twitter': twitter,
+      'linkedin': linkedin,
+      'email': email,
+      'github': github
+    }
+
     this._generateHexGrid()
   }
 
 
   _mouseIn(item) {
-    console.log(item)
-    animate.to(item.children[0].material.color, 0.5, {r: 1, g: 252/255, b: 226/255})
-    animate.to(item.children[0].material, 0.5, {opacity: 0.5})
+    if (!item.children[0].material.materials) {
+      animate.to(item.children[0].material.color, 0.5, {r: 1, g: 252/255, b: 226/255})
+      animate.to(item.children[0].material, 0.5, {opacity: 0.5})
+    }
 
     animate.to(item.children[1].material, 0.5, {opacity: 0.5})
 
     if (item.uColors) {
       animate.to(item.uColors.texture_color.value, 0.2, {r: 18/255, g: 36/255, b: 48/255})
-      animate.to(item.uColors.background_color.value, 0.2, {r: 236/255, g: 97/255, b: 94/255})
+      animate.to(item.uColors.background_color.value, 0.2, {r: 237/255, g: 113/255, b: 102/255})
     }
   }
 
   _mouseOut(item) {
-    if (item.showHover) {
-      animate.to(item.children[0].material.color, 0.5, {r: 230/255, g: 53/255, b: 49/255})
-    } else {
-      animate.to(item.children[0].material.color, 0.5, {r: 39/255, g: 62/255, b: 69/255, delay: DELAY})
+    if (!item.children[0].material.materials) {
+      animate.to(item.children[0].material.color, 0.8, {r: 39/255, g: 62/255, b: 69/255, delay: DELAY, ease: Elastic.easeOut.config(1, 0.5)})
     }
 
     animate.to(item.children[0].material, 0.5, {opacity: 1, delay: DELAY})
-    animate.to(item.children[1].material, 0.5, {opacity: 0})
+    animate.to(item.children[1].material, 0.5, {opacity: 0, delay: DELAY})
 
     if (item.uColors) {
-      animate.to(item.uColors.texture_color.value, 0.2, {r: 1, g: 252/255, b: 226/255})
-      animate.to(item.uColors.background_color.value, 0.2, {r: 230/255, g: 53/255, b: 49/255})
+      animate.to(item.uColors.texture_color.value, 0.2, {r: 1, g: 252/255, b: 226/255, delay: DELAY})
+      animate.to(item.uColors.background_color.value, 0.2, {r: 230/255, g: 53/255, b: 49/255, delay: DELAY})
     }
   }
 
@@ -89,7 +102,6 @@ export default class HexGenerator {
     } else {
       material = new THREE.MeshBasicMaterial({
         color: obj.button ? COLOR_RED : COLOR_OFFBLACK,
-        // emissive: COLOR_OFFBLACK,
         side: THREE.DoubleSide,
         shading: THREE.FlatShading,
         transparent: true,
@@ -167,7 +179,8 @@ export default class HexGenerator {
 
     hexMesh.mouse = {
       in: this._mouseIn.bind(this),
-      out: this._mouseOut.bind(this)
+      out: this._mouseOut.bind(this),
+      href: obj.type ? this.hrefMap[obj.type] : null
     }
 
     hexMesh.showHover = obj.button ? true : false
@@ -203,15 +216,34 @@ export default class HexGenerator {
     let img = document.createElement('img')
     img.setAttribute(
       'src', 'data:image/svg+xml;base64,' +
-      base64.btoa(unescape(encodeURIComponent(IconTwitter)))
+      base64.btoa(unescape(encodeURIComponent(this.iconMap[type])))
     )
 
     img.onload = () => {
       ctx.translate( canvas.width / 2, canvas.height / 2 )
       ctx.rotate(Math.PI)
       ctx.translate( -canvas.width / 2, -canvas.height / 2 )
-      ctx.scale(0.6, 0.6)
-      ctx.translate(85, 85)
+
+
+      if (type === 'twitter') {
+        ctx.scale(0.6, 0.6)
+        ctx.translate(85, 85)
+      }
+      if (type === 'email') {
+        ctx.scale(0.5, 0.5)
+        ctx.translate(134, 128)
+      }
+
+      if (type === 'linkedin') {
+        ctx.scale(0.5, 0.5)
+        ctx.translate(130, 120)
+      }
+
+      if (type === 'github') {
+        ctx.scale(0.5, 0.5)
+        ctx.translate(125, 128)
+      }
+
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
       var texture = new THREE.Texture(canvas)
 
@@ -231,16 +263,11 @@ export default class HexGenerator {
           texture_color: hexMesh.uColors.texture_color,
           texture: { type: "t", value: texture }
         },
-        vertexShader: vertTexture,
-        fragmentShader: fragTexture
+        vertexShader: vertAlphaTexture,
+        fragmentShader: fragAlphaTexture
       });
 
       meshGroup.children[1].children[0].material.materials[1] = material
-
-      // meshGroup.children[1].children[0].material.materials[1].map = texture
-      // meshGroup.children[1].children[0].material.blending = THREE.NoBlending
-      // meshGroup.children[1].children[0].material.materials[1].map.minFilter = THREE.NearestFilter
-
       group.add(meshGroup)
     };
   }
@@ -332,13 +359,13 @@ export default class HexGenerator {
       this._genSingleHex(el, gridSize)
     })
 
-    let light = new THREE.PointLight( 0xf2f2f2, 10, 100 )
-    light.position.set( 0, 0, 20 )
-    this.scene.add( light )
+    // let light = new THREE.PointLight( 0xf2f2f2, 10, 100 )
+    // light.position.set( 0, 0, 20 )
+    // this.scene.add( light )
 
     this.scene.add(this.hexGroup)
 
-    this.scene.fog = new THREE.Fog( COLOR_OFFBLACK, 22, 40 )
+    // this.scene.fog = new THREE.Fog( COLOR_OFFBLACK, 22, 40 )
 
   }
 }

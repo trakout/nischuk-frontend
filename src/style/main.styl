@@ -41,3 +41,49 @@ html, body
     font-size 26px
     line-height 1.2em
     margin-top -14px
+
+
+.gText
+  position relative
+
+  &:before, &:after
+    content attr(data-text)
+    position absolute
+    background black
+    top 0
+    left 0
+    width 100%
+    height 100%
+
+  &:before
+    left -1px
+    clip rect(0px, 450px, 66px, 0px)
+    text-shadow -1px 0 blue
+    animation glitch-anim 5s infinite linear alternate-reverse
+
+  &:after
+    left 0px
+    clip rect(0px, 450px, 46px, 0px)
+    text-shadow 1px 0 $red
+    animation glitch-anim-two 2s infinite linear
+
+h2.gText
+  &:before
+    animation glitch-anim 8s infinite linear alternate-reverse
+  &:after
+    animation glitch-anim-two 4s infinite linear
+
+random(min,max)
+  return floor(math(0, 'random')*(max - min + 1) + min)
+
+@keyframes glitch-anim
+  $steps = 10
+  for $i in (0)..($steps)
+    {percentage($i * 1 / $steps)}
+      clip: rect(random(0, 100)px, 500px, random(50, 100)px, 0)
+
+@keyframes glitch-anim-two
+  $steps = 20
+  for $i in (0)..($steps)
+    {percentage($i * 1 / $steps)}
+      clip: rect(random(0, 100)px, 500px, random(4, 100)px, 0)

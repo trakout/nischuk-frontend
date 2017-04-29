@@ -11,10 +11,10 @@ export default class HomeContainer extends Component {
     return (
       <div>
         <div className="center overlay">
-          <h1>
+          <h1 className="gText" data-text="Travis Nischuk">
             Travis Nischuk
           </h1>
-          <h2>
+          <h2 className="gText" data-text="Full Stack Developer / Tech Lead">
             Full Stack Developer / Tech Lead
           </h2>
         </div>

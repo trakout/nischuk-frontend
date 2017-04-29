@@ -14,6 +14,7 @@ export default class Renderer {
     this.mouse = new THREE.Vector2()
     this.INTERSECTED = null
     this.mouseWatchers = []
+    this.mouseClick = false
 
     this._initRenderer()
   }
@@ -50,6 +51,8 @@ export default class Renderer {
   _initListeners() {
     window.addEventListener('resize', this._handleResize.bind(this), false)
     window.addEventListener('mousemove', this._handleMouseMove.bind(this), false)
+    window.addEventListener('mousedown', this._handleMouseDown.bind(this), false)
+    window.addEventListener('touchstart', this._handleMouseDown.bind(this), false)
   }
 
 
@@ -66,6 +69,11 @@ export default class Renderer {
 		this.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1
   }
 
+  _handleMouseDown(e) {
+    e.preventDefault()
+    this.mouseClick = true
+  }
+
 
   _calculateMouseHover() {
     this.camera.updateMatrixWorld()
@@ -74,10 +82,12 @@ export default class Renderer {
 
     if (intersects.length > 0 /*&& this.INTERSECTED !== intersects[0].object.parent*/) {
 
-    //   if (this.mouseClick && this.intersected) {
-    //     this.mouseClick = false
-    //     this.intersected.click(this.intersected)
-    //   }
+      if (this.mouseClick) {
+        if (this.INTERSECTED && this.INTERSECTED.mouse && this.INTERSECTED.mouse.href) {
+          window.location = this.INTERSECTED.mouse.href
+        }
+        this.mouseClick = false
+      }
 
       if (intersects[0].object.parent !== this.INTERSECTED) {
         // old intersect
