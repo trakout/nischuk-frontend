@@ -3,7 +3,7 @@ import * as ReactGA from 'react-ga'
 
 import Renderer from './Renderer'
 import SkyBox from './SkyBox'
-import Grid from './Grid'
+import Grid from '../Grid'
 import HexGenerator from './HexGenerator'
 import HexBackgroundFallback from '../HexBackgroundFallback'
 import './HexBackground.styl'

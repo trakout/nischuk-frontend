@@ -8,10 +8,10 @@
 - Pug support
 
 ### Installation
-- `npm i`
+- `yarn`
 
 ### Development
-- `npm start`
+- `yarn start`
 
 ### Deployment
-- `npm run build`
+- `yarn run build`

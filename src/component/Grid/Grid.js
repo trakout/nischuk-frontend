@@ -1,5 +1,5 @@
-import fragGrid from 'webpack-glsl-loader!../../../asset/shader/fragGrid.glsl?name=fragGrid'
-import vertGrid from 'webpack-glsl-loader!../../../asset/shader/vertGrid.glsl?name=vertGrid'
+import fragGrid from 'webpack-glsl-loader!../../asset/shader/fragGrid.glsl?name=fragGrid'
+import vertGrid from 'webpack-glsl-loader!../../asset/shader/vertGrid.glsl?name=vertGrid'
 
 
 export default class Grid {

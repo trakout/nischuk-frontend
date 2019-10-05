@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-import HexBackground from '../component/HexBackground/'
+import HexBackground from '../component/WebGLContext/'
 
 export default class HomeContainer extends Component {
 
