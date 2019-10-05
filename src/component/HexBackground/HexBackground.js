@@ -3,6 +3,7 @@ import * as ReactGA from 'react-ga'
 
 import Renderer from './Renderer'
 import SkyBox from './SkyBox'
+import Grid from './Grid'
 import HexGenerator from './HexGenerator'
 import HexBackgroundFallback from '../HexBackgroundFallback'
 import './HexBackground.styl'
@@ -38,14 +39,13 @@ export default class HexBackground extends Component {
   _runGL() {
     let renderer = new Renderer()
     let hex = new HexGenerator(renderer)
-    let skybox = new SkyBox(renderer)
+    // let skybox = new SkyBox(renderer)
+    let grid = new Grid(renderer)
   }
 
 
   render() {
-    // console.log('RENDER')
     this.renderedOnce = true
-    // console.log('support?', this.glSupport)
 
     return (
       <div>

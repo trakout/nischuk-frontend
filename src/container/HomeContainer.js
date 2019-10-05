@@ -14,8 +14,8 @@ export default class HomeContainer extends Component {
           <h1 className="gText" data-text="Travis Nischuk">
             Travis Nischuk
           </h1>
-          <h2 className="gText" data-text="Full Stack Developer / Tech Lead">
-            Full Stack Developer / Tech Lead
+          <h2 className="gText" data-text="Full Stack Developer">
+            Full Stack Developer
           </h2>
         </div>
         <HexBackground />

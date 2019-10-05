@@ -1,4 +1,5 @@
-'use strict';
+'use strict'
+// require("@babel/polyfill")
 import './component/Favicon/Favicon'
 
 import React from 'react'

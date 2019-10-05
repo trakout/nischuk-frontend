@@ -1,13 +1,13 @@
 import * as animate from 'gsap-promise'
 import * as base64 from 'base64-lite'
 
-import IconEmail from 'svg-inline-loader?classPrefix!../../../asset/img/email.svg?name=IconEmail'
-import IconGithub from 'svg-inline-loader?classPrefix!../../../asset/img/github.svg?name=IconGithub'
-import IconTwitter from 'svg-inline-loader?classPrefix!../../../asset/img/twitter.svg?name=IconTwitter'
-import IconLinkedin from 'svg-inline-loader?classPrefix!../../../asset/img/linkedin.svg?name=IconLinkedin'
+import IconEmail from '../../../asset/img/inline/email.svg?name=IconEmail'
+import IconGithub from '../../../asset/img/inline/github.svg?name=IconGithub'
+import IconTwitter from '../../../asset/img/inline/twitter.svg?name=IconTwitter'
+import IconLinkedin from '../../../asset/img/inline/linkedin.svg?name=IconLinkedin'
 
-import fragAlphaTexture from 'webpack-glsl!../../../asset/shader/fragAlphaTexture.glsl?name=fragAlphaTexture'
-import vertAlphaTexture from 'webpack-glsl!../../../asset/shader/vertAlphaTexture.glsl?name=vertAlphaTexture'
+import fragAlphaTexture from 'webpack-glsl-loader!../../../asset/shader/fragAlphaTexture.glsl?name=fragAlphaTexture'
+import vertAlphaTexture from 'webpack-glsl-loader!../../../asset/shader/vertAlphaTexture.glsl?name=vertAlphaTexture'
 
 const linkedin = 'https://www.linkedin.com/in/nischuk/'
 const twitter = 'https://twitter.com/trakout'
@@ -265,7 +265,7 @@ export default class HexGenerator {
         },
         vertexShader: vertAlphaTexture,
         fragmentShader: fragAlphaTexture
-      });
+      })
 
       meshGroup.children[1].children[0].material.materials[1] = material
       group.add(meshGroup)
@@ -338,8 +338,8 @@ export default class HexGenerator {
 
     // console.log(this.gridArr)
 
-    this.camera.position.x = (gridSize.row / 2 + (gridSize.col / 2 % 2 ? 0.5 : 0)) * 3.05
-    this.camera.position.y = (gridSize.col / 2 * 0.46 * 2)
+    // this.camera.position.x = (gridSize.row / 2 + (gridSize.col / 2 % 2 ? 0.5 : 0)) * 3.05
+    // this.camera.position.y = (gridSize.col / 2 * 0.46 * 2)
     this.camera.position.z = 20
 
 
@@ -351,7 +351,6 @@ export default class HexGenerator {
       )
 
       this.controls.update()
-      // console.log('huhhhh')
     }
 
 
@@ -365,7 +364,7 @@ export default class HexGenerator {
 
     this.scene.add(this.hexGroup)
 
-    // this.scene.fog = new THREE.Fog( COLOR_OFFBLACK, 22, 40 )
+    this.scene.fog = new THREE.Fog( COLOR_OFFBLACK, 20, 40 )
 
   }
 }
