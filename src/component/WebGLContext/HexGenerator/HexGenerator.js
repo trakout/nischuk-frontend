@@ -57,7 +57,7 @@ export default class HexGenerator {
 
   _mouseIn(item) {
     if (!item.children[0].material.materials) {
-      animate.to(item.children[0].material.color, 0.5, {r: 1, g: 252/255, b: 226/255})
+      animate.to(item.children[0].material.color, 0.5, {r: 237/255, g: 113/255, b: 102/255})
       animate.to(item.children[0].material, 0.5, {opacity: 0.5})
     }
 
@@ -71,6 +71,7 @@ export default class HexGenerator {
 
   _mouseOut(item) {
     if (!item.children[0].material.materials) {
+      animate.to(item.children[0].material.color, 0.5, {r: 1, g: 252/255, b: 226/255})
       animate.to(item.children[0].material.color, 0.8, {r: 39/255, g: 62/255, b: 69/255, delay: DELAY, ease: Elastic.easeOut.config(1, 0.5)})
     }
 
@@ -338,20 +339,22 @@ export default class HexGenerator {
 
     // console.log(this.gridArr)
 
+    // use renderer._setCamera
     // this.camera.position.x = (gridSize.row / 2 + (gridSize.col / 2 % 2 ? 0.5 : 0)) * 3.05
     // this.camera.position.y = (gridSize.col / 2 * 0.46 * 2)
-    this.camera.position.z = 20
+    // this.camera.position.z = 20
 
+    // this.renderer._setCamera({z: 20})
 
-    if (this.controls) {
-      this.controls.target.set(
-        this.camera.position.x,
-        this.camera.position.y,
-        0
-      )
+    // if (this.controls) {
+    //   this.controls.target.set(
+    //     this.camera.position.x,
+    //     this.camera.position.y,
+    //     0
+    //   )
 
-      this.controls.update()
-    }
+    //   this.controls.update()
+    // }
 
 
     this.gridArr.map((el) => {
@@ -364,7 +367,7 @@ export default class HexGenerator {
 
     this.scene.add(this.hexGroup)
 
-    this.scene.fog = new THREE.Fog( COLOR_OFFBLACK, 20, 40 )
+    // this.scene.fog = new THREE.Fog( COLOR_OFFBLACK, 20, 40 )
 
   }
 }

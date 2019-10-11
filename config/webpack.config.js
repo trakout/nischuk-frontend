@@ -44,6 +44,14 @@ module.exports = {
         loader: 'svg-inline-loader'
       },
       {
+        test: /\.(glsl|vs|fs|vert|frag)$/,
+        exclude: /node_modules/,
+        use: [
+          'raw-loader',
+          'glslify-loader'
+        ]
+      },
+      {
         test: /\.styl$/,
         loader: 'style-loader!css-loader?sourceMap=true!postcss-loader!stylus-loader'
       }
@@ -57,7 +65,7 @@ module.exports = {
     new DashboardPlugin()
   ],
   devServer: {
-    contentBase: path.join(__dirname, 'src'),
+    contentBase: path.resolve('src'),
     historyApiFallback: true,
     compress: true,
     hot: true,

@@ -38,7 +38,7 @@ export default class HexBackground extends Component {
 
   _runGL() {
     let renderer = new Renderer()
-    let hex = new HexGenerator(renderer)
+    // let hex = new HexGenerator(renderer)
     // let skybox = new SkyBox(renderer)
     let grid = new Grid(renderer)
   }
