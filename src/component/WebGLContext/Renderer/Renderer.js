@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import OrbitControls from 'three-orbitcontrols'
 
 window.THREE = THREE
-import Effect from '../../Effect'
+// import Effect from '../../Effect'
 
 export default class Renderer {
   constructor() {
@@ -16,6 +16,8 @@ export default class Renderer {
     this.INTERSECTED = null
     this.mouseWatchers = []
     this.mouseClick = false
+
+    this.boundAnim = this._anim.bind(this)
 
     this.config = {
       planeData: {
@@ -31,7 +33,7 @@ export default class Renderer {
     }
 
     this._initRenderer()
-    this.composer = new Effect(this)
+    // this.composer = new Effect(this)
   }
 
 
@@ -83,6 +85,8 @@ export default class Renderer {
       )
       this.controls.update()
     }
+
+    this.camera.updateMatrixWorld()
   }
 
 
@@ -114,7 +118,7 @@ export default class Renderer {
 
 
   _calculateMouseHover() {
-    this.camera.updateMatrixWorld()
+    
     this.raycaster.setFromCamera(this.mouse, this.camera)
     let intersects = this.raycaster.intersectObjects(this.mouseWatchers, true)
 
@@ -151,8 +155,8 @@ export default class Renderer {
 
   _anim() {
     this._calculateMouseHover()
-    // this.renderer.render(this.scene, this.camera)
-    requestAnimationFrame(this._anim.bind(this))
+    this.renderer.render(this.scene, this.camera)
+    requestAnimationFrame(this.boundAnim)
   }
 
 

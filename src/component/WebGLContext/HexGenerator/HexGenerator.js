@@ -6,8 +6,13 @@ import IconGithub from '../../../asset/img/inline/github.svg?name=IconGithub'
 import IconTwitter from '../../../asset/img/inline/twitter.svg?name=IconTwitter'
 import IconLinkedin from '../../../asset/img/inline/linkedin.svg?name=IconLinkedin'
 
-import fragAlphaTexture from 'webpack-glsl-loader!../../../asset/shader/fragAlphaTexture.glsl?name=fragAlphaTexture'
-import vertAlphaTexture from 'webpack-glsl-loader!../../../asset/shader/vertAlphaTexture.glsl?name=vertAlphaTexture'
+
+import fragHex from '../../../asset/shader/fragHex.glsl'
+import vertHex from '../../../asset/shader/vertHex.glsl'
+import fragHexButton from '../../../asset/shader/fragHexButton.glsl'
+import vertHexButton from '../../../asset/shader/vertHexButton.glsl'
+
+import { isRestElement } from 'babel-types'
 
 const linkedin = 'https://www.linkedin.com/in/nischuk/'
 const twitter = 'https://twitter.com/trakout'
@@ -32,10 +37,15 @@ export default class HexGenerator {
     this.hexGroup = new THREE.Group()
     this.gridArr = null
     this.window = this._getWindowSize()
+    this.animTimers = { 
+      explode: 0 
+    }
     this.offset = {
       x: 75,
       y: 29
     }
+
+    
 
     this.iconMap = {
       'twitter': IconTwitter,
@@ -56,29 +66,45 @@ export default class HexGenerator {
 
 
   _mouseIn(item) {
-    if (!item.children[0].material.materials) {
-      animate.to(item.children[0].material.color, 0.5, {r: 237/255, g: 113/255, b: 102/255})
-      animate.to(item.children[0].material, 0.5, {opacity: 0.5})
+    if (!Array.isArray(item.children[0].material)) {
+      animate.to(item.children[0].material.uniforms.color.value, 0.5, {r: 237/255, g: 113/255, b: 102/255, overwrite: true})
+      animate.to(item.children[0].material.uniforms.opacity, 0.5, {value: 0.5, overwrite: true})
+      animate.to(
+        item.children[0].material.uniforms.hover, 
+        0.2, 
+        {value: 0.5}
+      )
     }
 
-    animate.to(item.children[1].material, 0.5, {opacity: 0.5})
-
+    animate.to(item.children[1].material, 0.5, {opacity: 0.5, overwrite: true})
+    
+    // buttons
     if (item.uColors) {
-      animate.to(item.uColors.texture_color.value, 0.2, {r: 18/255, g: 36/255, b: 48/255})
-      animate.to(item.uColors.background_color.value, 0.2, {r: 237/255, g: 113/255, b: 102/255})
+      
+
+      animate.to(item.uColors.texture_color.value, 0.2, {r: 18/255, g: 36/255, b: 48/255, overwrite: true})
+      animate.to(item.uColors.background_color.value, 0.2, {r: 237/255, g: 113/255, b: 102/255, overwrite: true})
     }
   }
 
   _mouseOut(item) {
-    if (!item.children[0].material.materials) {
-      animate.to(item.children[0].material.color, 0.5, {r: 1, g: 252/255, b: 226/255})
-      animate.to(item.children[0].material.color, 0.8, {r: 39/255, g: 62/255, b: 69/255, delay: DELAY, ease: Elastic.easeOut.config(1, 0.5)})
+    if (!Array.isArray(item.children[0].material)) {
+      animate.to(item.children[0].material.uniforms.color.value, 0.5, {r: 1, g: 252/255, b: 226/255})
+      animate.to(item.children[0].material.uniforms.color.value, 0.8, {r: 39/255, g: 62/255, b: 69/255, delay: DELAY, ease: Elastic.easeOut.config(1, 0.5)})
+      animate.to(item.children[0].material.uniforms.opacity, 0.5, {value: 1.0, delay: DELAY})
+      animate.to(
+        item.children[0].material.uniforms.hover, 
+        0.5, 
+        {value: 0, delay: DELAY}
+      )
     }
 
-    animate.to(item.children[0].material, 0.5, {opacity: 1, delay: DELAY})
     animate.to(item.children[1].material, 0.5, {opacity: 0, delay: DELAY})
 
+    // buttons
     if (item.uColors) {
+      animate.to(item.children[0].material, 0.5, {opacity: 1, delay: DELAY})
+      
       animate.to(item.uColors.texture_color.value, 0.2, {r: 1, g: 252/255, b: 226/255, delay: DELAY})
       animate.to(item.uColors.background_color.value, 0.2, {r: 230/255, g: 53/255, b: 49/255, delay: DELAY})
     }
@@ -99,14 +125,19 @@ export default class HexGenerator {
           })
         )
       }
-      material = new THREE.MultiMaterial(material)
     } else {
-      material = new THREE.MeshBasicMaterial({
-        color: obj.button ? COLOR_RED : COLOR_OFFBLACK,
-        side: THREE.DoubleSide,
-        shading: THREE.FlatShading,
+      material = new THREE.ShaderMaterial({
         transparent: true,
-        opacity: 1
+        flatShading: true,
+        side: THREE.DoubleSide,
+        uniforms: {
+          color: { value: new THREE.Color(COLOR_OFFBLACK) },
+          opacity: { value: 1 },
+          hover: { value: 0 },
+          explode: { value: 0 }
+        },
+        vertexShader: vertHex,
+        fragmentShader: fragHex
       })
     }
 
@@ -116,14 +147,15 @@ export default class HexGenerator {
 
   _genSingleHex(obj, gridSize) {
 
+    const sizeMultiplier = 2
     let hexMesh = new THREE.Object3D()
     let singleMeshGroup = new THREE.Group()
-    let hexGeometry = new THREE.CylinderBufferGeometry(1, 1, 0.5, 6)
+    let hexGeometry = new THREE.CylinderBufferGeometry(1 * sizeMultiplier, 1 * sizeMultiplier, 0.5, 6)
 
 		hexMesh.add( new THREE.Mesh(
 			new THREE.Geometry(),
       obj.button ? this._hexMaterial('multi', obj) : this._hexMaterial('normal', obj)
-		))
+    ))
 
     hexMesh.add(new THREE.LineSegments(
       new THREE.Geometry(),
@@ -143,8 +175,8 @@ export default class HexGenerator {
   	hexMesh.children[ 0 ].geometry = hexGeometry
     hexMesh.children[ 1 ].geometry = new THREE.EdgesGeometry(hexGeometry)
 
-    hexMesh.position.x = obj.x
-    hexMesh.position.y = obj.y
+    hexMesh.position.x = obj.x * sizeMultiplier
+    hexMesh.position.y = obj.y * sizeMultiplier
 
   	let outlineMesh = new THREE.Mesh(
       hexGeometry,
@@ -157,7 +189,7 @@ export default class HexGenerator {
   	outlineMesh.position.x = hexMesh.position.x
     outlineMesh.position.y = hexMesh.position.y
     outlineMesh.position.z = hexMesh.position.z
-  	outlineMesh.scale.multiplyScalar(1.05)
+  	outlineMesh.scale.multiplyScalar(1.06) // 1.05
 
     if (hexMesh.rotation.x < 0) {
       hexMesh.rotation.x = Math.PI / -2
@@ -199,8 +231,8 @@ export default class HexGenerator {
 
   _getWindowSize() {
     return {
-      x: 1400,
-      y: 900
+      x: 700,
+      y: 394
     }
   }
 
@@ -250,7 +282,7 @@ export default class HexGenerator {
 
       texture.needsUpdate = true
 
-      let material = meshGroup.children[1].children[0].material.materials[1]
+      let material = meshGroup.children[1].children[0].material[1]
 
       hexMesh.uColors = {
         background_color: { type: "c", value: new THREE.Color( COLOR_RED ) },
@@ -262,13 +294,15 @@ export default class HexGenerator {
         uniforms: {
           background_color: hexMesh.uColors.background_color,
           texture_color: hexMesh.uColors.texture_color,
-          texture: { type: "t", value: texture }
+          texture: { type: "t", value: texture },
+          hover: { value: 0 },
+          time: { value: 0 }
         },
-        vertexShader: vertAlphaTexture,
-        fragmentShader: fragAlphaTexture
+        vertexShader: vertHexButton,
+        fragmentShader: fragHexButton
       })
 
-      meshGroup.children[1].children[0].material.materials[1] = material
+      meshGroup.children[1].children[0].material[1] = material
       group.add(meshGroup)
     };
   }
@@ -338,8 +372,10 @@ export default class HexGenerator {
     }
 
     // console.log(this.gridArr)
+    this.hexGroup.position.x = -gridSize.col * 1.7
+    this.hexGroup.position.y = -gridSize.row
+    this.hexGroup.position.z = this.camera.position.z - 18
 
-    // use renderer._setCamera
     // this.camera.position.x = (gridSize.row / 2 + (gridSize.col / 2 % 2 ? 0.5 : 0)) * 3.05
     // this.camera.position.y = (gridSize.col / 2 * 0.46 * 2)
     // this.camera.position.z = 20
@@ -366,6 +402,49 @@ export default class HexGenerator {
     // this.scene.add( light )
 
     this.scene.add(this.hexGroup)
+
+    setTimeout(() => {
+      console.log(this.hexGroup)
+      for (let i = 0, iLen = this.hexGroup.children.length; i < iLen; i++) {
+        if (!Array.isArray(this.hexGroup.children[i].children[1].children[0].material)) {
+          
+          // console.log(this.hexGroup.children[i].children[1].children[0].material.opacity)
+          // console.log(this.hexGroup.children[i].children[0].material.uniforms.opacity)
+
+          Promise.all([
+            // animate.to(this.hexGroup.children[i].children[0].material, 0.5, {opacity: 0}), // backface
+            // animate.to(this.hexGroup.children[i].children[1].children[0].material, 0.5, {opacity: 0}), // backface
+            animate.to(this.hexGroup.children[i].children[0].rotation, 2, {z: Math.PI / 2}), // backface
+            animate.to(this.hexGroup.children[i].children[1].rotation, 2, {z: Math.PI / 2}),
+            // animate.to(this.hexGroup.children[i].children[0].material.uniforms.opacity)
+            animate.to(
+              this.hexGroup.children[i].children[1].children[0].material.uniforms.explode, 
+              2, 
+              {value: 4.0, overwrite: true}
+            )
+          ])
+          
+          console.log(this.hexGroup.children[i].children[1].children[0].material.opacity)
+
+          
+        }
+        // if (this.hexGroup.children[i].children[1].children[0].material[1]) { // buttons
+        //   animate.to(
+        //     this.hexGroup.children[i].children[1].children[0].material[1].uniforms.time,
+        //     5, 
+        //     { value: 1 }
+        //   )
+        //   // .onUpdate(() => {
+        //   //   this.hexGroup.children[i].children[1].children[0].material[1]
+        //   // })
+        //   // .children[1].children[0].material[1]
+        //   console.log('yay')
+        // }
+      }
+    }, 2000)
+
+    // animate.to(this.animTimers, 5, {explode: 1})
+    
 
     // this.scene.fog = new THREE.Fog( COLOR_OFFBLACK, 20, 40 )
 
