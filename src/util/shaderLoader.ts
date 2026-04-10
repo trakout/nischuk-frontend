@@ -1,0 +1,1 @@
+export const loadShader = async (url: string) => (await import(url)).default;

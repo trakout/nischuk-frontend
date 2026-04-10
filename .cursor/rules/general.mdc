@@ -1,0 +1,7 @@
+---
+alwaysApply: true
+---
+
+- Use bun. Do not use yarn or npm directly.
+- Do not downgrade packages. Upgrade them as needed. Only downgrade if there is no way around upgrading (eg. breaking functionality), and ask the user for permission prior to running the downgrade.
+- Keep dependencies pinned. Do no use "^" or "~" prefixes on package versions declared in package.json.

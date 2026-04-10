@@ -1,0 +1,1 @@
+export const getHexPosition = (x: number, y: number) => ({ x, y });

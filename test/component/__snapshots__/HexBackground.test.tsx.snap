@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renders 1`] = `
+<div>
+  <div
+    style="width: 100vw; height: 100vh; position: fixed; top: 0px; left: 0px; background: #130b2e;"
+  >
+    <div
+      data-testid="canvas"
+    >
+      <primitive
+        object="[object Object]"
+      />
+      <mesh
+        position="0,80,-360"
+      >
+        <spheregeometry
+          args="20,16,16"
+        />
+        <meshbasicmaterial
+          color="16776960"
+        />
+      </mesh>
+      <directionallight
+        intensity="1"
+        position="0,7,100"
+      />
+    </div>
+  </div>
+</div>
+`;
